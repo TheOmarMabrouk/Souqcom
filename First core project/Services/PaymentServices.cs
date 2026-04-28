@@ -2,12 +2,12 @@
 using System.Text;
 using System.Text.Json;
 
-public class PaymobPaymentService : IPaymentService
+public class PaymentServices : IPaymentService
 {
     private readonly IConfiguration _config;
     private readonly HttpClient _httpClient;
 
-    public PaymobPaymentService(IConfiguration config, HttpClient httpClient)
+    public PaymentServices(IConfiguration config, HttpClient httpClient)
     {
         _config = config;
         _httpClient = httpClient;

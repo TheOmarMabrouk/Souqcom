@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace First_core_project.Areas.Admin.Controllers
 {
     [Area("Admin")]
-   [Authorize(Roles = "Super Admin")]
+   [Authorize(Roles = "Admin")]
     public class CategoriesController : Controller
     {
        SouqcomContext _context;

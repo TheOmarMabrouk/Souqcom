@@ -1,5 +1,6 @@
-﻿using First_core_project.Models;
+﻿using AutoMapper;
 using First_core_project.DTOs.API;
+using First_core_project.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace First_core_project.Services.API
@@ -7,35 +8,34 @@ namespace First_core_project.Services.API
     public class ApiCartService : IApiCartService
     {
         private readonly SouqcomContext _context;
-        public ApiCartService(SouqcomContext context) => _context = context;
+        private readonly IMapper _mapper;
+
+        public ApiCartService(SouqcomContext context, IMapper mapper)
+        {
+            _context = context;
+            _mapper = mapper;
+        }
 
         public async Task<ApiCartDto> GetUserCartAsync(string userId, string baseUrl)
         {
-            // تأكد من أسماء الأعمدة هنا p.Productid و c.Qty حسب ملف الـ Model عندك
             var cartItems = await _context.Carts
                 .Include(c => c.Product)
                 .Where(c => c.UserId == userId)
-                .Select(c => new ApiCartItemDto
-                {
-                    CartItemId = c.Id,
-                    ProductId = (int)c.ProductId, // جرب تخليها Productid (i صغيرة) لو مطلع ايرور
-                    ProductName = c.Product.Name,
-                    Price = c.Product.Price,
-                    Quantity = (int)c.Qty, // جرب تخليها Qty لو Quantity غلط
-                    MainImage = baseUrl + (c.Product.Photo ?? "default.jpg")
-                }).ToListAsync();
+                .ToListAsync();
+
+            // استخدام AutoMapper لتحويل العناصر
+            var itemsDto = _mapper.Map<List<ApiCartItemDto>>(cartItems, opt => opt.Items["BaseUrl"] = baseUrl);
 
             return new ApiCartDto
             {
-                Items = cartItems,
-                TotalItems = cartItems.Count,
-                TotalPrice = cartItems.Sum(i => (i.Price ?? 0) * i.Quantity)
+                Items = itemsDto,
+                TotalItems = itemsDto.Count,
+                TotalPrice = itemsDto.Sum(i => (i.Price ?? 0) * i.Quantity)
             };
         }
 
         public async Task AddToCartAsync(string userId, int productId)
         {
-            // بنشيك لو المنتج موجود أصلاً في السلة لليوزر ده
             var item = await _context.Carts
                 .FirstOrDefaultAsync(c => c.UserId == userId && c.ProductId == productId);
 
@@ -53,6 +53,19 @@ namespace First_core_project.Services.API
                 });
             }
             await _context.SaveChangesAsync();
+        }
+
+        // إضافة ميثود الحذف عشان السلة تكمل
+        public async Task<bool> RemoveFromCartAsync(string userId, int cartItemId)
+        {
+            var item = await _context.Carts
+                .FirstOrDefaultAsync(c => c.Id == cartItemId && c.UserId == userId);
+
+            if (item == null) return false;
+
+            _context.Carts.Remove(item);
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

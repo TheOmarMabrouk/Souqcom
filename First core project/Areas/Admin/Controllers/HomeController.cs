@@ -6,8 +6,9 @@ using System.Linq;
 
 namespace First_core_project.Areas.Admin.Controllers
 {
-    [Area("Admin")] 
-   
+    [Area("Admin")]
+    [Authorize(Roles = "Admin")]
+
     public class HomeController : Controller
     {
        

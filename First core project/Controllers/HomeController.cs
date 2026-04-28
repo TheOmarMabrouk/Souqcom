@@ -181,10 +181,6 @@ namespace First_core_project.Controllers
 
        
 
-        [Authorize]
-        public IActionResult Privacy()
-        {
-            return View();
-        }
+        
     }
 }

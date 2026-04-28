@@ -13,13 +13,13 @@ namespace First_core_project.Services
             _db = db;
         }
 
-        // 🟢 Get All Categories
+      
         public async Task<List<Category>> GetCategoriesAsync()
         {
             return await _db.Categories.ToListAsync();
         }
 
-        // 🟢 Get Products By Category + Pagination + Sorting
+      
         public async Task<List<Product>> GetProductsByCategoryAsync(
             int categoryId,
             PaginationParams param)
@@ -33,7 +33,7 @@ namespace First_core_project.Services
                 .ToListAsync();
         }
 
-        // 🟢 Product Details
+       
         public async Task<Product?> GetProductDetailsAsync(int id)
         {
             return await _db.Products
@@ -42,7 +42,7 @@ namespace First_core_project.Services
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        // 🟢 Search + Pagination + Sorting
+        
         public async Task<List<Product>> SearchProductsAsync(
             string? name,
             PaginationParams param)

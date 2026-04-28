@@ -1,14 +1,16 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using First_core_project.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;       
-using First_core_project.Models;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace First_core_project.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "Admin")]
     public class ReviewsController : Controller
     {
         private readonly SouqcomContext _context;

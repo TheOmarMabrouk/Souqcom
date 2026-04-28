@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace First_core_project.Models;
 
+
 public partial class OrderItem
 {
     public int Id { get; set; }
@@ -18,4 +19,8 @@ public partial class OrderItem
     public int? Quantity { get; set; }
 
     public decimal? Total { get; set; }
+
+    public virtual Order? Order { get; set; }
+
+    public virtual Product? Product { get; set; }
 }

@@ -1,4 +1,5 @@
-using First_core_project.Data;
+﻿using First_core_project.Data;
+using First_core_project.Helpers;
 using First_core_project.Models;
 using First_core_project.Services;
 using First_core_project.Services.API;
@@ -29,8 +30,13 @@ builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IApiCartService, ApiCartService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
-
-builder.Services.AddHttpClient<IPaymentService, PaymobPaymentService>();
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+builder.Services.AddScoped<IApiOrderService, ApiOrderService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+// واحد للقديم
+builder.Services.AddHttpClient<IPaymentService, PaymentServices>();
+// واحد للجديد
+builder.Services.AddHttpClient<IIPaymentService, PaymobPaymentService>();
 builder.Services.AddFluentValidationAutoValidation()
                 .AddFluentValidationClientsideAdapters();
 

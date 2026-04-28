@@ -7,16 +7,7 @@ namespace First_core_project.Services.API
     {
         Task<(List<ApiProductDto> products, int totalCount)> GetAllProductsAsync(int page, int pageSize, int? categoryId, string? search, string? sort, string baseUrl);
         Task<int> CreateProductAsync(Product product);
+        Task<bool> UpdateProductAsync(int id, Product product);
+        Task<bool> DeleteProductAsync(int id);
     }
 }
-
-
-
-
-
-
-
-
-
-
-

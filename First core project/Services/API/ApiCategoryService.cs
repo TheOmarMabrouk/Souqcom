@@ -1,4 +1,5 @@
-﻿using First_core_project.DTOs.API;
+﻿using AutoMapper;
+using First_core_project.DTOs.API;
 using First_core_project.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,15 +8,51 @@ namespace First_core_project.Services.API
     public class ApiCategoryService : IApiCategoryService
     {
         private readonly SouqcomContext _context;
-        public ApiCategoryService(SouqcomContext context) => _context = context;
-        public async Task<List<ApiCategoryDto>> GetAllCategoriesAsync() =>
-            await _context.Categories.Select(c => new ApiCategoryDto { Id = c.Id, Name = c.Name }).ToListAsync();
-        public async Task<int> CreateCategoryAsync(string name)
+        private readonly IMapper _mapper;
+
+        public ApiCategoryService(SouqcomContext context, IMapper mapper)
         {
-            var cat = new Category { Name = name };
-            _context.Categories.Add(cat);
+            _context = context;
+            _mapper = mapper;
+        }
+
+        public async Task<List<ApiCategoryDto>> GetAllCategoriesAsync()
+        {
+            var categories = await _context.Categories.AsNoTracking().ToListAsync();
+            // استخدام AutoMapper للتحويل لـ DTO
+            return _mapper.Map<List<ApiCategoryDto>>(categories);
+        }
+
+        public async Task<int> CreateCategoryAsync(Category category)
+        {
+            var exists = await _context.Categories.AnyAsync(c => c.Name == category.Name);
+            if (exists) throw new InvalidOperationException("هذا القسم موجود بالفعل");
+
+            _context.Categories.Add(category);
             await _context.SaveChangesAsync();
-            return cat.Id;
+            return category.Id;
+        }
+
+        public async Task<bool> UpdateCategoryAsync(int id, Category updatedCategory)
+        {
+            var existing = await _context.Categories.FindAsync(id);
+            if (existing == null) return false;
+
+            // تحديث احترافي باستخدام SetValues (تجاهل الـ ID أوتوماتيك)
+            _context.Entry(existing).CurrentValues.SetValues(updatedCategory);
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> DeleteCategoryAsync(int id)
+        {
+            var category = await _context.Categories.FindAsync(id);
+            if (category == null) return false;
+
+            _context.Categories.Remove(category);
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

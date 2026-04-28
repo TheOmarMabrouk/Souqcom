@@ -16,5 +16,6 @@ public partial class Order
     public DateTime? CreatAt { get; set; }
 
     public DateTime? PaidAt { get; set; }
-    public object OrderItems { get; internal set; }
+
+    public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 }

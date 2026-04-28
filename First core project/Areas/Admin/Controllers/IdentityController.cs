@@ -1,5 +1,6 @@
 ﻿using First_core_project.Data;
 using First_core_project.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 namespace First_core_project.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "SuperAdmin")]
     public class IdentityController : Controller
     {
         private readonly UserManager<IdentityUser> _userManager;
