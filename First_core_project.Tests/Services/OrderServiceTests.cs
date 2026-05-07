@@ -7,33 +7,37 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
-public class OrderServiceTests
+
+namespace First_core_project.Tests.Services 
 {
-    private SouqcomContext GetDb()
+    public class OrderServiceTests
     {
-        var options = new DbContextOptionsBuilder<SouqcomContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .Options;
+        private SouqcomContext GetDb()
+        {
+            var options = new DbContextOptionsBuilder<SouqcomContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
 
-        return new TestSouqcomContext(options);
-    }
+            return new TestSouqcomContext(options);
+        }
 
-    [Fact]
-    public async Task Checkout_Should_Fail_When_Cart_Empty()
-    {
-        var context = GetDb();
+        [Fact]
+        public async Task Checkout_Should_Fail_When_Cart_Empty()
+        {
+            var context = GetDb();
 
-        var paymentMock = new Mock<IPaymentService>();
-        var loggerMock = new Mock<ILogger<OrderService>>();
+            var paymentMock = new Mock<IPaymentService>();
+            var loggerMock = new Mock<ILogger<OrderService>>();
 
-        var service = new OrderService(
-            context,
-            paymentMock.Object,
-            loggerMock.Object);
+            var service = new OrderService(
+                context,
+                paymentMock.Object,
+                loggerMock.Object);
 
-        var result = await service.CheckoutAsync("user1");
+            var result = await service.CheckoutAsync("user1");
 
-        result.Success.Should().BeFalse();
-        result.Message.Should().Be("Cart is empty");
+            result.Success.Should().BeFalse();
+            result.Message.Should().Be("Cart is empty");
+        }
     }
 }

@@ -6,5 +6,7 @@ namespace First_core_project.Services.API
     {
         Task<List<OrderResponseDto>> GetUserOrdersAsync(string userId);
         Task<int?> CreateOrderAsync(string userId);
+
+        Task UpdateOrderStatusAsync(int orderId, int status);
     }
 }

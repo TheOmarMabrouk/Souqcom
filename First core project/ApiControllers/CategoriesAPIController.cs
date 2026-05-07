@@ -1,7 +1,5 @@
-﻿using AutoMapper;
-using First_core_project.DTOs.API;
+﻿using First_core_project.DTOs.API;
 using First_core_project.Helpers;
-using First_core_project.Models;
 using First_core_project.Services.API;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -14,12 +12,11 @@ namespace First_core_project.Controllers.API
     public class CategoriesAPIController : ControllerBase
     {
         private readonly IApiCategoryService _categoryService;
-        private readonly IMapper _mapper;
 
-        public CategoriesAPIController(IApiCategoryService categoryService, IMapper mapper)
+        // ملاحظة: شيلنا الـ IMapper لأن السيرفيس هي اللي بتعمل المابينج دلوقتي
+        public CategoriesAPIController(IApiCategoryService categoryService)
         {
             _categoryService = categoryService;
-            _mapper = mapper;
         }
 
         [HttpGet]
@@ -33,20 +30,25 @@ namespace First_core_project.Controllers.API
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "SuperAdmin")]
         public async Task<IActionResult> CreateCategory([FromBody] CategoryCreateDto categoryDto)
         {
-            // استخدام المابينج بدل الـ new اليدوي
-            var category = _mapper.Map<Category>(categoryDto);
-
-            var categoryId = await _categoryService.CreateCategoryAsync(category);
-            return Ok(new ApiResponse<object>(true, "تمت إضافة القسم بنجاح", new { categoryId }));
+            // بنبعت الـ DTO للسيرفيس مباشرة.. السيرفيس هي اللي هتعمل المابينج
+            try
+            {
+                var categoryId = await _categoryService.CreateCategoryAsync(categoryDto);
+                return Ok(new ApiResponse<object>(true, "تمت إضافة القسم بنجاح", new { categoryId }));
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new ApiResponse<object>(false, ex.Message));
+            }
         }
 
         [HttpPut("{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "SuperAdmin")]
         public async Task<IActionResult> Update(int id, [FromBody] CategoryCreateDto categoryDto)
         {
-            var category = _mapper.Map<Category>(categoryDto);
+            // بنبعت الـ DTO للسيرفيس مباشرة
+            var result = await _categoryService.UpdateCategoryAsync(id, categoryDto);
 
-            var result = await _categoryService.UpdateCategoryAsync(id, category);
             if (!result) return NotFound(new ApiResponse<object>(false, "القسم غير موجود"));
 
             return Ok(new ApiResponse<object>(true, "تم تحديث القسم بنجاح", new { id }));
@@ -56,10 +58,18 @@ namespace First_core_project.Controllers.API
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "SuperAdmin")]
         public async Task<IActionResult> Delete(int id)
         {
-            var result = await _categoryService.DeleteCategoryAsync(id);
-            if (!result) return NotFound(new ApiResponse<object>(false, "القسم غير موجود"));
+            try
+            {
+                var result = await _categoryService.DeleteCategoryAsync(id);
+                if (!result) return NotFound(new ApiResponse<object>(false, "القسم غير موجود"));
 
-            return Ok(new ApiResponse<object>(true, "تم حذف القسم بنجاح", new { deletedId = id }));
+                return Ok(new ApiResponse<object>(true, "تم حذف القسم بنجاح", new { deletedId = id }));
+            }
+            catch (InvalidOperationException ex)
+            {
+                // دي عشان لو القسم فيه منتجات ورفض يمسحه
+                return BadRequest(new ApiResponse<object>(false, ex.Message));
+            }
         }
     }
 }

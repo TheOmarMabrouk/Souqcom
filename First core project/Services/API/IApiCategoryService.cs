@@ -6,14 +6,8 @@ namespace First_core_project.Services.API
     public interface IApiCategoryService
     {
         Task<List<ApiCategoryDto>> GetAllCategoriesAsync();
-
-        // الميثود اللي كانت ناقصة
+        Task<int> CreateCategoryAsync(CategoryCreateDto dto); // تعديل هنا
+        Task<bool> UpdateCategoryAsync(int id, CategoryCreateDto dto); // وتعديل هنا
         Task<bool> DeleteCategoryAsync(int id);
-
-        // الميثود اللي بتاخد الكائن كامل
-        Task<int> CreateCategoryAsync(Category category);
-
-        // لو لسه محتاج الـ Update ضيفها هنا بالمرة
-        Task<bool> UpdateCategoryAsync(int id, Category category);
     }
 }

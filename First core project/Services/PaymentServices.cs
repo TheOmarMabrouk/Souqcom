@@ -139,5 +139,22 @@ public class PaymentServices : IPaymentService
 
         using var doc = JsonDocument.Parse(json);
         return doc.RootElement.GetProperty("token").GetString();
+
+   
+    }
+
+    // ضيف الميثود دي تحت ميثود GetPaymentKeyAsync
+    public async Task<bool> VerifyPaymentAsync(IQueryCollection query)
+    {
+        // بشكل مبدئي: هنتأكد بس إن كلمة success جاية بـ "true"
+        // دي خطوة مؤقتة عشان الكود يشتغل، وفي الحقيقة بنزود عليها تشفير HMAC
+        var success = query["success"].ToString();
+
+        if (success == "true")
+        {
+            return await Task.FromResult(true);
+        }
+
+        return await Task.FromResult(false);
     }
 }

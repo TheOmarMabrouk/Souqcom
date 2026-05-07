@@ -5,6 +5,7 @@ namespace First_core_project.Services.API
 {
     public interface IAuthService
     {
-        Task<AuthResponseDto?> LoginAsync(LoginVm model);
+        Task<AuthResponseDto?> LoginAsync(LoginDto model);
+        Task<bool> RegisterAsync(RegisterDto model);
     }
 }

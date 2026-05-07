@@ -46,5 +46,17 @@ namespace First_core_project.Controllers.API
 
             return Ok(new ApiResponse<object>(true, "تم الحذف من السلة", null));
         }
+
+        [HttpPut("update-quantity")]
+        public async Task<IActionResult> UpdateQuantity(int productId, int quantity)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "";
+            var result = await _cartService.UpdateQuantityAsync(userId, productId, quantity);
+
+            if (!result)
+                return BadRequest(new ApiResponse<object>(false, "فشل تحديث الكمية (تأكد من المخزن)", null));
+
+            return Ok(new ApiResponse<object>(true, "تم تحديث الكمية بنجاح", null));
+        }
     }
 }

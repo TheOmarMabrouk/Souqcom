@@ -41,24 +41,25 @@ namespace First_core_project.Services.API
             return (productsDto, totalCount);
         }
 
-        public async Task<int> CreateProductAsync(Product product)
+        public async Task<int> CreateProductAsync(ProductCreateDto dto)
         {
+
+            var product = _mapper.Map<Product>(dto);
+
+           
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
+
             return product.Id;
         }
 
-        public async Task<bool> UpdateProductAsync(int id, Product updatedProduct)
+        public async Task<bool> UpdateProductAsync(int id, ProductCreateDto dto) // تأكد إنها ProductCreateDto
         {
-            // 1. بندور على المنتج الأصلي اللي في الداتابيز
             var existing = await _context.Products.FindAsync(id);
             if (existing == null) return false;
 
-            // 2. بنخلي الـ Id بتاع الـ Object اللي جاي هو هو بتاع الداتابيز عشان نضمن مفيش تغيير
-            updatedProduct.Id = id;
-
-            // 3. بنحدث القيم (الـ EF هنا ذكي مش هيقرب للـ ID لأنه عارف إنه المفتاح)
-            _context.Entry(existing).CurrentValues.SetValues(updatedProduct);
+            // بنحول الديتو لإينتيتي عشان نقدر نسيفها
+            _mapper.Map(dto, existing);
 
             await _context.SaveChangesAsync();
             return true;

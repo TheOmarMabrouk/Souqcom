@@ -28,7 +28,9 @@ namespace First_core_project.Areas.Admin.Controllers
             return View();
         }
 
-        // الصفحة الأساسية لعرض المستخدمين وصلاحياتهم
+
+        // الصفحة الأساسية لعرض المستخدمين وصلاحياتهم 
+        [Authorize(Roles = "SuperAdmin,Admin")]
         public IActionResult UserRoles()
         {
             var users = _userManager.Users.ToList();
@@ -68,12 +70,16 @@ namespace First_core_project.Areas.Admin.Controllers
             return RedirectToAction(nameof(Role));
         }
 
+
+        [Authorize(Roles = "SuperAdmin,Admin")]
         public IActionResult Role()
         {
             var roles = _roleManager.Roles.ToList();
             return View(roles);
         }
 
+
+        [Authorize(Roles = "SuperAdmin,Admin")]
         public IActionResult User()
         {
             var users = _userManager.Users.ToList();

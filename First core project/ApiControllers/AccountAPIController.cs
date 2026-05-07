@@ -1,10 +1,7 @@
-﻿using First_core_project.Helpers; // تأكد من استدعاء فولدر الهيلبرز
-using First_core_project.Models;
+﻿using First_core_project.DTOs.API;
+using First_core_project.Helpers;
 using First_core_project.Services.API;
 using Microsoft.AspNetCore.Mvc;
-
-
-
 
 namespace First_core_project.Controllers.API
 {
@@ -19,18 +16,33 @@ namespace First_core_project.Controllers.API
             _authService = authService;
         }
 
+        // 1. تسجيل مستخدم جديد
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] RegisterDto model)
+        {
+            // الـ Validation بيتم أوتوماتيك بفضل [ApiController] والـ FluentValidation
+            var result = await _authService.RegisterAsync(model);
+
+            if (!result)
+            {
+                return BadRequest(new ApiResponse<object>(false, "فشل إنشاء الحساب. قد يكون البريد الإلكتروني مستخدماً بالفعل أو كلمة المرور لا تستوفي الشروط."));
+            }
+
+            return Ok(new ApiResponse<object>(true, "تم إنشاء الحساب بنجاح! يمكنك الآن تسجيل الدخول."));
+        }
+
+        // 2. تسجيل الدخول
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginVm model)
+        public async Task<IActionResult> Login([FromBody] LoginDto model)
         {
             var result = await _authService.LoginAsync(model);
 
             if (result == null)
             {
-                // الرد الموحد في حالة الفشل
-                return Unauthorized(new ApiResponse<object>(false, "البريد الإلكتروني أو كلمة المرور غير صحيحة", null!));
+                return Unauthorized(new ApiResponse<object>(false, "البريد الإلكتروني أو كلمة المرور غير صحيحة"));
             }
 
-            // الرد الموحد في حالة النجاح
+            // بنرجع الـ AuthResponseDto (اللي فيه الـ Token والـ Expiration) جوه الـ Data
             return Ok(new ApiResponse<object>(true, "تم تسجيل الدخول بنجاح", result));
         }
     }

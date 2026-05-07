@@ -3,5 +3,7 @@
     public interface IPaymentService
     {
         Task<string> CreatePaymentAsync(int orderId, decimal total);
+
+        Task<bool> VerifyPaymentAsync(IQueryCollection query);
     }
 }

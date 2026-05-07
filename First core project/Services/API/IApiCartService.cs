@@ -6,7 +6,9 @@ namespace First_core_project.Services.API
     {
         Task<ApiCartDto> GetUserCartAsync(string userId, string baseUrl);
         Task AddToCartAsync(string userId, int productId);
-       
+
+        Task<bool> UpdateQuantityAsync(string userId, int productId, int newQuantity);
+
         Task<bool> RemoveFromCartAsync(string userId, int cartItemId);
     }
 }
